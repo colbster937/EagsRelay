@@ -11,7 +11,7 @@ Eaglercraft relay server implementation written in TypeScript
 - [x] Origin whitelist
 - [x] Join code customization
 - [x] STUN / TURN server support
-- [] ~~Rate limiting~~
+- ~~[ ] Rate limiting~~
 
 ## Usage:
 
