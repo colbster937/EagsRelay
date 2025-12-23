@@ -18,11 +18,7 @@ const CONFIG_DEFAULT = {
       hostnames: ['example.com']
     }
   },
-  join_codes: {
-    length: 5,
-    allowed_chars: 'abcdefghijklmnopqrstuvwxyz0123456789',
-    mixed_case: false
-  },
+  join_code: 'eags',
   relays: [
     {
       type: 'stun',
@@ -125,15 +121,7 @@ export class RelayConfig {
   }
 
   public static generateCode (): string {
-    let ret = '';
-    const chars: string = this.get('join_codes.allowed_chars') as string;
-    const mixed: number = this.get('join_codes.mixed_case') as number;
-    for (let i = 0; i < (this.get('join_codes.length') as number); i++) {
-      let c = chars.charAt(Math.floor(Math.random() * chars.length));
-      if (mixed) c = Math.random() < 0.5 ? c.toLowerCase() : c.toUpperCase();
-      ret += c;
-    }
-    return ret;
+    return this.get('join_code') as string;
   }
 
   public static getRealIP (req: IncomingMessage): string {

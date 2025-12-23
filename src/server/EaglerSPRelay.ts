@@ -78,7 +78,7 @@ export class EaglerSPRelay {
                 if (ipkt.CONNECTION_TYPE === 1) {
                   if (!this.rateLimit(this.WORLD_RATE_LIMITER, ws, waiting.ADDRESS)) return;
                   let arr: EaglerSPServer[] | undefined = this.SERVER_ADDRESS_SETS.get(waiting.ADDRESS);
-                  if (arr !== undefined && arr.length >= Number(RelayConfig.get('limits.worlds_per_ip'))) {
+                  if ((arr !== undefined && arr.length >= Number(RelayConfig.get('limits.worlds_per_ip'))) || this.SERVER_CODES.has(RelayConfig.generateCode())) {
                     RelayLogger.debug('[{}]: Too many worlds are open on this address', waiting.ADDRESS);
                     ws.send(RelayPacketFEDisconnectClient.RATELIMIT_PACKET_TOO_MANY);
                     ws.close();
@@ -120,7 +120,7 @@ export class EaglerSPRelay {
                   RelayLogger.debug('[{}] [Relay -> Server]: PKT 0x01: Send ICE server list to server', waiting.ADDRESS);
                 } else if (ipkt.CONNECTION_TYPE === 2) {
                   if (!this.rateLimit(this.PING_RATE_LIMITER, ws, waiting.ADDRESS)) return;
-                  const codeLen: number = (RelayConfig.get('join_codes.length') as number);
+                  const codeLen: number = ((RelayConfig.get('join_code') as string).length as number);
                   let code: string = ipkt.CONNECTION_CODE;
                   RelayLogger.debug('[{}]: Connected as a client, requested server code: {}', waiting.ADDRESS, code);
                   if (code.length !== codeLen) {
@@ -128,7 +128,6 @@ export class EaglerSPRelay {
                     ws.send(RelayPacket.writePacket(new RelayPacketFFErrorCode(4, `The join code is the wrong length, it should be ${codeLen} chars long`)));
                     ws.close();
                   } else {
-                    if (!RelayConfig.get('join_codes.mixed_length')) code = code.toLowerCase();
                     srv = this.SERVER_CODES.get(code);
                     if (srv === undefined) {
                       ws.send(RelayPacket.writePacket(new RelayPacketFFErrorCode(5, 'Invalid code, no LAN world found!')));
