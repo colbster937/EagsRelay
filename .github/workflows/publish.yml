@@ -2,7 +2,7 @@ name: Publish Package to npmjs
 
 on:
   release:
-    types: [published]
+    types: [ published ]
   push:
     branches: [ main ]
   workflow_dispatch:
@@ -32,6 +32,7 @@ jobs:
           pv=$(jq -r .version package.json)
           rv=$(curl -s https://registry.npmjs.org/$(jq -r .name package.json) | jq -r '."dist-tags".latest')
           [ "$pv" = "$rv" ] && exit 0
+          npm install
           npm ci
           npm run build
       - run: npm publish --provenance --access public
